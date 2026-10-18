@@ -7,74 +7,175 @@
   background: var(--card);
   border: 1px solid var(--card-border);
   box-shadow: var(--shadow);
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   text-align: center;
+  transition: padding 0.2s ease, border-radius 0.2s ease;
 }
 
 .app h1 {
   margin: 0 0 0.25rem;
-  font-size: 1.75rem;
+  font-size: clamp(1.5rem, 5.5vw, 1.75rem);
   letter-spacing: -0.02em;
 }
 
 .tagline {
   margin: 0 0 1.25rem;
   color: var(--muted);
-  font-size: 0.95rem;
+  font-size: clamp(0.85rem, 3.2vw, 0.95rem);
 }
 
 /* The search box: input and button side by side. */
 .search {
   display: flex;
   gap: 0.5rem;
+  width: 100%;
+}
+
+.search-input-wrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-width: 0;
 }
 
 .search input {
-  flex: 1;
+  width: 100%;
   min-width: 0;
-  padding: 0.8rem 1rem;
-  font: inherit;
+  min-height: 48px;
+  padding: 0.75rem 2.25rem 0.75rem 1rem;
+  font-family: inherit;
+  font-size: 16px; /* Explicit 16px prevents iOS Safari auto-zoom on focus */
   color: var(--text);
   background: rgba(255, 255, 255, 0.6);
   border: 1px solid var(--card-border);
   border-radius: 0.9rem;
   outline: none;
-  transition: box-shadow 0.15s;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: box-shadow 0.15s, background-color 0.15s;
 }
 
 .search input:focus {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
-.search button {
-  padding: 0.8rem 1.2rem;
-  font: inherit;
+/* Clear button to reset input with one tap on mobile */
+.clear-btn {
+  position: absolute;
+  right: 0.6rem;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.08);
+  border: none;
+  border-radius: 50%;
+  color: var(--muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, transform 0.1s, color 0.15s;
+}
+
+.clear-btn:hover {
+  background: rgba(0, 0, 0, 0.16);
+  color: var(--text);
+}
+
+.clear-btn:active {
+  transform: scale(0.9);
+}
+
+.search button[type="submit"] {
+  min-height: 48px;
+  padding: 0.75rem 1.25rem;
+  font-family: inherit;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #fff;
   background: var(--accent);
   border: none;
   border-radius: 0.9rem;
   cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, transform 0.1s, opacity 0.15s;
 }
 
-.search button:hover:not(:disabled) {
+.search button[type="submit"]:hover:not(:disabled) {
   background: var(--accent-dark);
 }
 
-.search button:active:not(:disabled) {
-  transform: scale(0.97);
+.search button[type="submit"]:active:not(:disabled) {
+  transform: scale(0.96);
 }
 
-.search button:disabled {
+.search button[type="submit"]:disabled {
   opacity: 0.6;
   cursor: wait;
+}
+
+/* Quick city suggestions for fast one-thumb mobile interaction */
+.quick-cities {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.quick-cities.fallback {
+  margin-top: 0.85rem;
+}
+
+.quick-title {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.chip {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--card-border);
+  border-radius: 9999px;
+  padding: 0.4rem 0.8rem;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+}
+
+.chip:hover {
+  background: rgba(255, 255, 255, 0.85);
+  transform: translateY(-1px);
+}
+
+.chip:active {
+  transform: scale(0.94);
 }
 
 /* Status messages: loading, errors and the empty state before the first search. */
 .status {
   margin: 1.5rem 0 0;
   color: var(--muted);
+  font-size: 0.95rem;
 }
 
 .status.error {
@@ -82,6 +183,30 @@
   background: var(--danger-bg);
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
+  font-size: 0.9rem;
+}
+
+/* Animated loading indicator */
+.loading-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.spinner {
+  width: 1.15rem;
+  height: 1.15rem;
+  border: 2.5px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Friendly notice when a searched city does not exist or has a typo */
@@ -99,23 +224,24 @@
 }
 
 .not-found-icon {
-  font-size: 2.2rem;
+  font-size: clamp(2rem, 8vw, 2.4rem);
   line-height: 1;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.15rem;
 }
 
 .not-found-title {
   margin: 0;
   font-weight: 600;
-  font-size: 1.05rem;
+  font-size: clamp(1rem, 4vw, 1.1rem);
   color: var(--text);
 }
 
 .not-found-message {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: clamp(0.85rem, 3.2vw, 0.9rem);
   color: var(--muted);
   line-height: 1.45;
+  max-width: 340px;
 }
 
 .not-found-message strong {
@@ -130,25 +256,26 @@
 
 .current h2 {
   margin: 0;
-  font-size: 1.35rem;
+  font-size: clamp(1.2rem, 4.8vw, 1.4rem);
   font-weight: 600;
 }
 
 .current .time {
   margin: 0.15rem 0 0;
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: clamp(0.8rem, 3vw, 0.85rem);
 }
 
 .current .icon {
-  font-size: 4.5rem;
+  font-size: clamp(3.5rem, 14vw, 4.5rem);
   line-height: 1;
-  margin: 0.75rem 0 0.25rem;
+  margin: 0.65rem 0 0.2rem;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.08));
 }
 
 .current .temp {
   margin: 0;
-  font-size: 4rem;
+  font-size: clamp(3.25rem, 13vw, 4rem);
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.04em;
@@ -156,7 +283,7 @@
 
 .current .desc {
   margin: 0.4rem 0 0;
-  font-size: 1.1rem;
+  font-size: clamp(1rem, 3.8vw, 1.1rem);
   color: var(--muted);
   text-transform: capitalize;
 }
@@ -169,41 +296,33 @@
 }
 
 .details div {
-  padding: 0.75rem 0.5rem;
+  padding: 0.75rem 0.45rem;
   border-radius: 1rem;
   background: rgba(255, 255, 255, 0.45);
   border: 1px solid var(--card-border);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .details dt {
-  font-size: 0.75rem;
+  font-size: clamp(0.65rem, 2.4vw, 0.75rem);
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .details dd {
   margin: 0.2rem 0 0;
+  font-size: clamp(0.9rem, 3.4vw, 1.05rem);
   font-weight: 600;
-}
-
-@media (prefers-color-scheme: dark) {
-  .search input,
-  .status.not-found,
-  .details div {
-    background: rgba(30, 41, 59, 0.6);
-  }
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+  white-space: nowrap;
 }
 
 /* The next-3-days row: three tiles side by side. */
@@ -230,34 +349,149 @@
   flex-direction: column;
   align-items: center;
   gap: 0.2rem;
-  padding: 0.75rem 0.5rem;
+  padding: 0.75rem 0.45rem;
   border-radius: 1rem;
   background: rgba(255, 255, 255, 0.45);
   border: 1px solid var(--card-border);
+  min-width: 0;
+  transition: transform 0.15s ease, background 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.days li:active {
+  transform: scale(0.97);
 }
 
 .day-name {
-  font-size: 0.8rem;
+  font-size: clamp(0.75rem, 2.6vw, 0.8rem);
   font-weight: 600;
   color: var(--muted);
 }
 
 .day-icon {
-  font-size: 1.6rem;
+  font-size: clamp(1.4rem, 5vw, 1.65rem);
   line-height: 1.2;
 }
 
 .day-max {
+  font-size: clamp(0.92rem, 3.2vw, 1rem);
   font-weight: 700;
 }
 
 .day-min {
-  font-size: 0.9rem;
+  font-size: clamp(0.82rem, 2.8vw, 0.9rem);
   color: var(--muted);
 }
 
+/* Dark mode overrides */
 @media (prefers-color-scheme: dark) {
+  .search input,
+  .status.not-found,
+  .details div,
   .days li {
     background: rgba(30, 41, 59, 0.6);
+  }
+
+  .clear-btn {
+    background: rgba(255, 255, 255, 0.14);
+    color: var(--muted);
+  }
+
+  .clear-btn:hover {
+    background: rgba(255, 255, 255, 0.24);
+    color: var(--text);
+  }
+
+  .chip {
+    background: rgba(30, 41, 59, 0.6);
+  }
+
+  .chip:hover {
+    background: rgba(30, 41, 59, 0.9);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Mobile device responsive adjustments (max-width: 480px) */
+@media (max-width: 480px) {
+  .app {
+    padding: 1.35rem 1rem 1.5rem;
+    border-radius: 1.25rem;
+  }
+
+  .search {
+    gap: 0.4rem;
+  }
+
+  .search input {
+    min-height: 46px;
+    padding: 0.65rem 2rem 0.65rem 0.85rem;
+  }
+
+  .search button[type="submit"] {
+    min-height: 46px;
+    padding: 0.65rem 1rem;
+  }
+
+  .current {
+    margin-top: 1.25rem;
+  }
+
+  .details {
+    gap: 0.4rem;
+    margin-top: 1.25rem;
+  }
+
+  .details div {
+    padding: 0.65rem 0.3rem;
+    border-radius: 0.85rem;
+  }
+
+  .days-title {
+    margin: 1.25rem 0 0.45rem;
+  }
+
+  .days {
+    gap: 0.4rem;
+  }
+
+  .days li {
+    padding: 0.65rem 0.3rem;
+    border-radius: 0.85rem;
+  }
+
+  .quick-cities {
+    margin-top: 0.85rem;
+  }
+}
+
+/* Very narrow devices (max-width: 350px, e.g. Galaxy Z Fold cover, small screens) */
+@media (max-width: 350px) {
+  .app {
+    padding: 1.15rem 0.75rem 1.25rem;
+    border-radius: 1rem;
+  }
+
+  .details dt {
+    letter-spacing: 0;
+  }
+
+  .chips {
+    gap: 0.3rem;
+  }
+
+  .chip {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
   }
 }

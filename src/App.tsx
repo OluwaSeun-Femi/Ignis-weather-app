@@ -66,6 +66,9 @@ function dayName(date: string): string {
   return new Date(date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short' })
 }
 
+// Popular quick-pick cities that allow one-tap searching on mobile.
+const POPULAR_CITIES = ['Lagos', 'London', 'Tokyo', 'New York', 'Paris']
+
 function App() {
   // query is whatever the user has typed into the search box so far.
   const [query, setQuery] = useState('')
@@ -148,6 +151,12 @@ function App() {
     if (city) lookUp(city)
   }
 
+  // Quick-search handler for popular city chips (great for mobile one-thumb interaction).
+  function handleQuickSearch(cityName: string) {
+    setQuery(cityName)
+    lookUp(cityName)
+  }
+
   // sky is the icon and description for the current weather code (only when we have weather).
   const sky = weather ? describe(weather.code, weather.isDay) : null
 
@@ -157,21 +166,44 @@ function App() {
       <h1>Weather</h1>
       <p className="tagline">Type a city to see the weather right now.</p>
 
-      <form className="search" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="e.g. Lagos"
-          aria-label="City"
-        />
-        <button type="submit" disabled={loading}>
+      <form className="search" onSubmit={handleSubmit} role="search">
+        <div className="search-input-wrap">
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="e.g. Lagos"
+            aria-label="City name"
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck={false}
+            enterKeyHint="search"
+          />
+          {query && (
+            <button
+              type="button"
+              className="clear-btn"
+              onClick={() => setQuery('')}
+              aria-label="Clear search input"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+        <button type="submit" disabled={loading} aria-label="Search weather">
           Search
         </button>
       </form>
 
       {error && <p className="status error">{error}</p>}
-      {loading && <p className="status">Loading…</p>}
+
+      {loading && (
+        <div className="status loading-indicator" role="status" aria-live="polite">
+          <span className="spinner" aria-hidden="true" />
+          <span>Loading…</span>
+        </div>
+      )}
+
       {notFoundCity && !loading && (
         <div className="status not-found">
           <span className="not-found-icon" aria-hidden="true">
@@ -181,10 +213,43 @@ function App() {
           <p className="not-found-message">
             We couldn't find <strong>&ldquo;{notFoundCity}&rdquo;</strong>. It looks like this city doesn't exist or is misspelled. Please double-check and try again.
           </p>
+          <div className="quick-cities fallback">
+            <p className="quick-title">Or try a popular city</p>
+            <div className="chips">
+              {POPULAR_CITIES.map((city) => (
+                <button
+                  key={city}
+                  type="button"
+                  className="chip"
+                  onClick={() => handleQuickSearch(city)}
+                >
+                  {city}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       )}
+
       {!weather && !loading && !error && !notFoundCity && (
-        <p className="status">No city searched yet.</p>
+        <div className="empty-state">
+          <p className="status">No city searched yet.</p>
+          <div className="quick-cities">
+            <p className="quick-title">Popular cities</p>
+            <div className="chips">
+              {POPULAR_CITIES.map((city) => (
+                <button
+                  key={city}
+                  type="button"
+                  className="chip"
+                  onClick={() => handleQuickSearch(city)}
+                >
+                  {city}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       )}
 
       {weather && sky && !loading && (
