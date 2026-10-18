@@ -6,7 +6,7 @@ type GeocodeResponse = {
   results?: { name: string; country: string; latitude: number; longitude: number }[]
 }
 
-// This describes the forecast answer: the "current" block holds the weather right now.
+// This describes the forecast answer: "current" is the weather right now, "daily" is one list per day.
 type ForecastResponse = {
   current: {
     time: string
@@ -17,6 +17,20 @@ type ForecastResponse = {
     weather_code: number
     is_day: number
   }
+  daily: {
+    time: string[]
+    temperature_2m_max: number[]
+    temperature_2m_min: number[]
+    weather_code: number[]
+  }
+}
+
+// One day of the forecast: its date plus the highest and lowest temperature expected.
+type Day = {
+  date: string
+  max: number
+  min: number
+  code: number
 }
 
 // Everything we know about a looked-up city, kept together in one object.
@@ -30,6 +44,7 @@ type Weather = {
   wind: number
   code: number
   isDay: boolean
+  days: Day[]
 }
 
 // Open-Meteo returns the sky as a WMO code number; this turns it into words and an icon.
@@ -44,6 +59,11 @@ function describe(code: number, isDay: boolean): { text: string; icon: string } 
   if (code <= 82) return { text: 'rain showers', icon: '🌧️' }
   if (code <= 86) return { text: 'snow showers', icon: '🌨️' }
   return { text: 'thunderstorm', icon: '⛈️' }
+}
+
+// dayName turns a date like "2026-10-19" into a short weekday such as "Mon".
+function dayName(date: string): string {
+  return new Date(date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short' })
 }
 
 function App() {
@@ -80,10 +100,20 @@ function App() {
 
       // Step 2: the forecast API takes those coordinates and returns the conditions right now.
       const forecastRes = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,is_day&timezone=auto`,
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,weather_code&forecast_days=4&timezone=auto`,
       )
       const forecast: ForecastResponse = await forecastRes.json()
       const c = forecast.current
+      const d = forecast.daily
+
+      // The daily lists are index-aligned (item 2 of each is the same day), so we zip them into
+      // Day objects and skip index 0, which is today, to keep only the next 3 days.
+      const days: Day[] = d.time.slice(1).map((date, i) => ({
+        date,
+        max: d.temperature_2m_max[i + 1],
+        min: d.temperature_2m_min[i + 1],
+        code: d.weather_code[i + 1],
+      }))
 
       // Storing the result in state makes React re-render and show it.
       setWeather({
@@ -96,6 +126,7 @@ function App() {
         wind: c.wind_speed_10m,
         code: c.weather_code,
         isDay: c.is_day === 1,
+        days,
       })
     } catch {
       // Any network or parsing problem lands here instead of crashing the page.
@@ -168,6 +199,21 @@ function App() {
               <dd>{Math.round(weather.wind)} km/h</dd>
             </div>
           </dl>
+
+          {/* The next 3 days: one tile per day with its icon, weekday, high and low. */}
+          <h3 className="days-title">Next 3 days</h3>
+          <ul className="days">
+            {weather.days.map((day) => (
+              <li key={day.date}>
+                <span className="day-name">{dayName(day.date)}</span>
+                <span className="day-icon" aria-hidden="true">
+                  {describe(day.code, true).icon}
+                </span>
+                <span className="day-max">{Math.round(day.max)}°</span>
+                <span className="day-min">{Math.round(day.min)}°</span>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
     </main>

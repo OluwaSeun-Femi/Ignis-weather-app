@@ -166,3 +166,59 @@
     transform: none;
   }
 }
+
+/* The next-3-days row: three tiles side by side. */
+.days-title {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.days {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.days li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.75rem 0.5rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid var(--card-border);
+}
+
+.day-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.day-icon {
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+
+.day-max {
+  font-weight: 700;
+}
+
+.day-min {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+@media (prefers-color-scheme: dark) {
+  .days li {
+    background: rgba(30, 41, 59, 0.6);
+  }
+}
