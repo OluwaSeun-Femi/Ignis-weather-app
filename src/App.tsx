@@ -79,10 +79,14 @@ function App() {
   // error holds a short message if either request fails, so the page never goes blank.
   const [error, setError] = useState<string | null>(null)
 
+  // notFoundCity holds the query when a city cannot be found, showing a friendly notice instead of an error.
+  const [notFoundCity, setNotFoundCity] = useState<string | null>(null)
+
   // lookUp turns a city name into coordinates, then coordinates into the current weather.
   async function lookUp(city: string) {
     setLoading(true)
     setError(null)
+    setNotFoundCity(null)
     try {
       // Step 1: the geocoding API turns the typed city into latitude and longitude.
       const geoRes = await fetch(
@@ -90,10 +94,10 @@ function App() {
       )
       const geo: GeocodeResponse = await geoRes.json()
 
-      // If the API returns no results, the city was not found, so we stop with a message.
+      // If the API returns no results, the city doesn't exist or is misspelled, so show a friendly message.
       if (!geo.results || geo.results.length === 0) {
         setWeather(null)
-        setError('City not found')
+        setNotFoundCity(city)
         return
       }
       const { name, country, latitude, longitude } = geo.results[0]
@@ -168,7 +172,18 @@ function App() {
 
       {error && <p className="status error">{error}</p>}
       {loading && <p className="status">Loading…</p>}
-      {!weather && !loading && !error && (
+      {notFoundCity && !loading && (
+        <div className="status not-found">
+          <span className="not-found-icon" aria-hidden="true">
+            🌍
+          </span>
+          <p className="not-found-title">City not found</p>
+          <p className="not-found-message">
+            We couldn't find <strong>&ldquo;{notFoundCity}&rdquo;</strong>. It looks like this city doesn't exist or is misspelled. Please double-check and try again.
+          </p>
+        </div>
+      )}
+      {!weather && !loading && !error && !notFoundCity && (
         <p className="status">No city searched yet.</p>
       )}
 

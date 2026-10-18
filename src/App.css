@@ -84,6 +84,44 @@
   border-radius: 0.75rem;
 }
 
+/* Friendly notice when a searched city does not exist or has a typo */
+.status.not-found {
+  margin: 1.5rem 0 0;
+  padding: 1.25rem 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid var(--card-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  animation: fade-in 0.35s ease-out;
+}
+
+.not-found-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+  margin-bottom: 0.2rem;
+}
+
+.not-found-title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.not-found-message {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.not-found-message strong {
+  color: var(--text);
+}
+
 /* The current-weather block: icon, big temperature, description and details. */
 .current {
   margin-top: 1.5rem;
@@ -151,6 +189,7 @@
 
 @media (prefers-color-scheme: dark) {
   .search input,
+  .status.not-found,
   .details div {
     background: rgba(30, 41, 59, 0.6);
   }
