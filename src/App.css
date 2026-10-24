@@ -39,12 +39,8 @@
   box-shadow: var(--shadow);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-<<<<<<< HEAD
   color: var(--text);
-=======
->>>>>>> 17b2cdcf821349b0f1d851148e664c20df923d60
   text-align: center;
-  transition: padding 0.2s ease, border-radius 0.2s ease;
 }
 
 .top {
@@ -55,7 +51,6 @@
 }
 
 .app h1 {
-<<<<<<< HEAD
   margin: 0;
   font-size: 1.5rem;
   letter-spacing: -0.02em;
@@ -68,17 +63,6 @@
   border-radius: 999px;
   background: var(--tile);
   border: 1px solid var(--card-border);
-=======
-  margin: 0 0 0.25rem;
-  font-size: clamp(1.5rem, 5.5vw, 1.75rem);
-  letter-spacing: -0.02em;
-}
-
-.tagline {
-  margin: 0 0 1.25rem;
-  color: var(--muted);
-  font-size: clamp(0.85rem, 3.2vw, 0.95rem);
->>>>>>> 17b2cdcf821349b0f1d851148e664c20df923d60
 }
 
 .unit button {
@@ -105,38 +89,21 @@
 .search {
   display: flex;
   gap: 0.5rem;
-  width: 100%;
-}
-
-.search-input-wrap {
-  position: relative;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  min-width: 0;
 }
 
 .search input {
-  width: 100%;
+  flex: 1;
   min-width: 0;
   min-height: 48px;
-<<<<<<< HEAD
   padding: 0 1rem;
   font: inherit;
   font-size: 1rem; /* 16px stops iPhones zooming in when the box is tapped */
-=======
-  padding: 0.75rem 2.25rem 0.75rem 1rem;
-  font-family: inherit;
-  font-size: 16px; /* Explicit 16px prevents iOS Safari auto-zoom on focus */
->>>>>>> 17b2cdcf821349b0f1d851148e664c20df923d60
   color: var(--text);
   background: var(--tile);
   border: 1px solid var(--card-border);
   border-radius: 0.9rem;
   outline: none;
-  -webkit-appearance: none;
-  appearance: none;
-  transition: box-shadow 0.15s, background-color 0.15s;
+  transition: box-shadow 0.15s;
 }
 
 .search input::placeholder {
@@ -147,7 +114,6 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
-<<<<<<< HEAD
 .search button {
   width: 48px;
   min-height: 48px;
@@ -156,54 +122,14 @@
   place-items: center;
   font: inherit;
   font-size: 1.2rem;
-=======
-/* Clear button to reset input with one tap on mobile */
-.clear-btn {
-  position: absolute;
-  right: 0.6rem;
-  width: 26px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.08);
-  border: none;
-  border-radius: 50%;
-  color: var(--muted);
-  font-size: 0.75rem;
-  cursor: pointer;
-  padding: 0;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.15s, transform 0.1s, color 0.15s;
-}
-
-.clear-btn:hover {
-  background: rgba(0, 0, 0, 0.16);
-  color: var(--text);
-}
-
-.clear-btn:active {
-  transform: scale(0.9);
-}
-
-.search button[type="submit"] {
-  min-height: 48px;
-  padding: 0.75rem 1.25rem;
-  font-family: inherit;
-  font-size: 0.95rem;
-  font-weight: 600;
->>>>>>> 17b2cdcf821349b0f1d851148e664c20df923d60
   color: #fff;
   background: var(--accent);
   border: none;
   border-radius: 0.9rem;
   cursor: pointer;
-  white-space: nowrap;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.15s, transform 0.1s, opacity 0.15s;
+  transition: background 0.15s, transform 0.1s;
 }
 
-<<<<<<< HEAD
 .search button.locate {
   background: var(--tile);
   border: 1px solid var(--card-border);
@@ -215,22 +141,13 @@
 
 .search button:active:not(:disabled) {
   transform: scale(0.95);
-=======
-.search button[type="submit"]:hover:not(:disabled) {
-  background: var(--accent-dark);
 }
 
-.search button[type="submit"]:active:not(:disabled) {
-  transform: scale(0.96);
->>>>>>> 17b2cdcf821349b0f1d851148e664c20df923d60
-}
-
-.search button[type="submit"]:disabled {
+.search button:disabled {
   opacity: 0.6;
   cursor: wait;
 }
 
-<<<<<<< HEAD
 /* The little spinner inside the search button while loading. */
 .spinner {
   width: 18px;
@@ -279,65 +196,9 @@
 }
 
 /* ---------- Status, empty, loading and not-found states ---------- */
-=======
-/* Quick city suggestions for fast one-thumb mobile interaction */
-.quick-cities {
-  margin-top: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.quick-cities.fallback {
-  margin-top: 0.85rem;
-}
-
-.quick-title {
-  margin: 0;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.4rem;
-}
-
-.chip {
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px solid var(--card-border);
-  border-radius: 9999px;
-  padding: 0.4rem 0.8rem;
-  font-family: inherit;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--text);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
-}
-
-.chip:hover {
-  background: rgba(255, 255, 255, 0.85);
-  transform: translateY(-1px);
-}
-
-.chip:active {
-  transform: scale(0.94);
-}
-
-/* Status messages: loading, errors and the empty state before the first search. */
->>>>>>> 17b2cdcf821349b0f1d851148e664c20df923d60
 .status {
   margin: 1.25rem 0 0;
   color: var(--muted);
-  font-size: 0.95rem;
 }
 
 .status.error {
@@ -345,69 +206,6 @@
   background: var(--danger-bg);
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
-  font-size: 0.9rem;
-}
-
-/* Animated loading indicator */
-.loading-indicator {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.55rem;
-}
-
-.spinner {
-  width: 1.15rem;
-  height: 1.15rem;
-  border: 2.5px solid color-mix(in srgb, var(--accent) 25%, transparent);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.75s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Friendly notice when a searched city does not exist or has a typo */
-.status.not-found {
-  margin: 1.5rem 0 0;
-  padding: 1.25rem 1rem;
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.45);
-  border: 1px solid var(--card-border);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.35rem;
-  animation: fade-in 0.35s ease-out;
-}
-
-.not-found-icon {
-  font-size: clamp(2rem, 8vw, 2.4rem);
-  line-height: 1;
-  margin-bottom: 0.15rem;
-}
-
-.not-found-title {
-  margin: 0;
-  font-weight: 600;
-  font-size: clamp(1rem, 4vw, 1.1rem);
-  color: var(--text);
-}
-
-.not-found-message {
-  margin: 0;
-  font-size: clamp(0.85rem, 3.2vw, 0.9rem);
-  color: var(--muted);
-  line-height: 1.45;
-  max-width: 340px;
-}
-
-.not-found-message strong {
-  color: var(--text);
 }
 
 .empty {
