@@ -273,12 +273,34 @@ function App() {
   // sky is the icon, description and colour theme for the current weather (only when we have weather).
   const sky = weather ? describe(weather.code, weather.isDay) : null
 
-  // The JSX: a full-screen scene whose colours follow the weather, with the card in the middle.
+  // The JSX: a full-width scene whose colours follow the weather, with a header, then a two-column layout.
   return (
     <div className={`scene theme-${sky?.theme ?? 'default'}`}>
       <main className="app">
+        {/* Header: title on the left, search in the middle, unit toggle on the right. */}
         <header className="top">
-          <h1>Weather</h1>
+          <h1>
+            <span aria-hidden="true">🌤️</span> Weather
+          </h1>
+
+          <form className="search" onSubmit={handleSubmit}>
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search a city, e.g. Lagos"
+              aria-label="City"
+              autoComplete="off"
+              enterKeyHint="search"
+            />
+            <button type="submit" disabled={loading} aria-label="Search">
+              {loading ? <span className="spinner" /> : '🔍'}
+            </button>
+            <button type="button" className="locate" onClick={useMyLocation} disabled={loading} aria-label="Use my location" title="Use my location">
+              📍
+            </button>
+          </form>
+
           {/* The unit toggle: two buttons, the active one highlighted. */}
           <div className="unit" role="group" aria-label="Temperature unit">
             <button type="button" className={unit === 'C' ? 'on' : ''} onClick={() => setUnit('C')}>
@@ -290,26 +312,9 @@ function App() {
           </div>
         </header>
 
-        <form className="search" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search a city"
-            aria-label="City"
-            autoComplete="off"
-            enterKeyHint="search"
-          />
-          <button type="submit" disabled={loading} aria-label="Search">
-            {loading ? <span className="spinner" /> : '🔍'}
-          </button>
-          <button type="button" className="locate" onClick={useMyLocation} disabled={loading} aria-label="Use my location" title="Use my location">
-            📍
-          </button>
-        </form>
-
         {/* Quick-pick chips: recent searches first (if any), then a few popular cities. */}
         <div className="chips" aria-label="Quick picks">
+          <span className="chips-label">{recent.length ? 'Recent' : 'Popular'}</span>
           {(recent.length ? recent : QUICK_CITIES).map((city) => (
             <button type="button" key={city} onClick={() => lookUp(city)} disabled={loading}>
               {city}
@@ -322,10 +327,8 @@ function App() {
         {/* The loading skeleton: grey blocks in the shape of the result, pulsing until data arrives. */}
         {loading && (
           <div className="skeleton" aria-label="Loading">
-            <div className="sk sk-title" />
-            <div className="sk sk-icon" />
-            <div className="sk sk-temp" />
-            <div className="sk sk-row" />
+            <div className="sk sk-hero" />
+            <div className="sk sk-panel" />
           </div>
         )}
 
@@ -345,78 +348,87 @@ function App() {
         {!weather && !loading && !error && !notFound && (
           <div className="empty">
             <span aria-hidden="true">🌍</span>
-            <p>Type a city or tap one above to see the weather right now and for the next 3 days.</p>
+            <p>Search a city or pick one above to see the weather right now, hour by hour, and for the next 3 days.</p>
           </div>
         )}
 
         {weather && sky && !loading && (
-          <section className="current" key={weather.city + weather.time}>
-            <h2>
-              {weather.city}
-              {weather.country && <span className="country">, {weather.country}</span>}
-            </h2>
-            {/* The API's time is already in the city's own time zone (timezone=auto). */}
-            <p className="time">Local time {clock(weather.time)}</p>
-            <div className="icon" aria-hidden="true">
-              {sky.icon}
+          <section className="result" key={weather.city + weather.time}>
+            {/* Left column: the hero card with the city, big temperature and the detail tiles. */}
+            <div className="hero">
+              <h2>
+                {weather.city}
+                {weather.country && <span className="country">, {weather.country}</span>}
+              </h2>
+              {/* The API's time is already in the city's own time zone (timezone=auto). */}
+              <p className="time">Local time {clock(weather.time)}</p>
+
+              <div className="headline">
+                <div className="icon" aria-hidden="true">
+                  {sky.icon}
+                </div>
+                <div>
+                  <p className="temp">{show(weather.temperature)}</p>
+                  <p className="desc">{sky.text}</p>
+                </div>
+              </div>
+
+              <dl className="details">
+                <div>
+                  <dt>Feels like</dt>
+                  <dd>{show(weather.feelsLike)}</dd>
+                </div>
+                <div>
+                  <dt>Humidity</dt>
+                  <dd>{weather.humidity}%</dd>
+                </div>
+                <div>
+                  <dt>Wind</dt>
+                  <dd>{Math.round(weather.wind)} km/h</dd>
+                </div>
+                <div>
+                  <dt>Sunrise</dt>
+                  <dd>{clock(weather.sunrise)}</dd>
+                </div>
+                <div>
+                  <dt>Sunset</dt>
+                  <dd>{clock(weather.sunset)}</dd>
+                </div>
+              </dl>
             </div>
-            <p className="temp">{show(weather.temperature)}</p>
-            <p className="desc">{sky.text}</p>
 
-            <dl className="details">
-              <div>
-                <dt>Feels like</dt>
-                <dd>{show(weather.feelsLike)}</dd>
-              </div>
-              <div>
-                <dt>Humidity</dt>
-                <dd>{weather.humidity}%</dd>
-              </div>
-              <div>
-                <dt>Wind</dt>
-                <dd>{Math.round(weather.wind)} km/h</dd>
-              </div>
-              <div>
-                <dt>Sunrise</dt>
-                <dd>{clock(weather.sunrise)}</dd>
-              </div>
-              <div>
-                <dt>Sunset</dt>
-                <dd>{clock(weather.sunset)}</dd>
-              </div>
-            </dl>
+            {/* Right column: the next 24 hours strip and the 3-day forecast. */}
+            <div className="panel">
+              <h3 className="section-title">Next 24 hours</h3>
+              <ul className="hours">
+                {weather.hours.map((hour, i) => (
+                  <li key={hour.time} className={i === 0 ? 'now' : ''}>
+                    <span className="hour-time">{i === 0 ? 'Now' : clock(hour.time)}</span>
+                    <span className="hour-icon" aria-hidden="true">
+                      {describe(hour.code, hour.isDay).icon}
+                    </span>
+                    <span className="hour-temp">{show(hour.temp)}</span>
+                  </li>
+                ))}
+              </ul>
 
-            {/* The next 24 hours: a strip you can swipe sideways on a phone. */}
-            <h3 className="section-title">Next 24 hours</h3>
-            <ul className="hours">
-              {weather.hours.map((hour, i) => (
-                <li key={hour.time} className={i === 0 ? 'now' : ''}>
-                  <span className="hour-time">{i === 0 ? 'Now' : clock(hour.time)}</span>
-                  <span className="hour-icon" aria-hidden="true">
-                    {describe(hour.code, hour.isDay).icon}
-                  </span>
-                  <span className="hour-temp">{show(hour.temp)}</span>
-                </li>
-              ))}
-            </ul>
-
-            {/* The next 3 days: one tile per day with its icon, weekday, high and low. */}
-            <h3 className="section-title">Next 3 days</h3>
-            <ul className="days">
-              {weather.days.map((day) => (
-                <li key={day.date}>
-                  <span className="day-name">{dayName(day.date)}</span>
-                  <span className="day-icon" aria-hidden="true">
-                    {describe(day.code, true).icon}
-                  </span>
-                  <span className="day-desc">{describe(day.code, true).text}</span>
-                  <span className="day-range">
-                    <span className="day-max">{show(day.max)}</span>
-                    <span className="day-min">{show(day.min)}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
+              <h3 className="section-title">Next 3 days</h3>
+              <ul className="days">
+                {weather.days.map((day) => (
+                  <li key={day.date}>
+                    <span className="day-name">{dayName(day.date)}</span>
+                    <span className="day-icon" aria-hidden="true">
+                      {describe(day.code, true).icon}
+                    </span>
+                    <span className="day-desc">{describe(day.code, true).text}</span>
+                    <span className="day-range">
+                      <span className="day-max">{show(day.max)}</span>
+                      <span className="day-min">{show(day.min)}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </section>
         )}
       </main>
